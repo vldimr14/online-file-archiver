@@ -41,6 +41,8 @@ let render = function (template, node) {
     if (!node) return;
     // check if template is a string or function. If it's function, run it.
     node.innerHTML = (typeof template === 'function' ? template() : template);
+    adaptTableView();
+    handleInputFiles();
 }
 
 let someData = {
@@ -58,7 +60,7 @@ const uploadFilesTemplate = `
                     ondrop="dropHandler(event);"
                     ondragover="dragOverHandler(event);">
                     <div class="display-6">Drag files here <br> or</div>
-                    <input type="file" class="uploadFileInput" multiple="true">
+                    <input type="file" class="uploadFileInput" multiple="true" id="uploadFilesInput">
                 </div>
             </div>
         </div>`;
@@ -66,7 +68,7 @@ const uploadFilesTemplate = `
 
 function getTableView() {
     if (files.length > 0) {
-        let tableViewStart = `<div class="main-content container justify-content-center table-content">
+        let tableViewStart = `<div class="main-content container justify-content-center table-content" id="table-contentId">
             <table class="table table-hover">
                 <caption>Uploaded files</caption>
                 <thead>
@@ -91,13 +93,20 @@ function getTableView() {
                     </tr>`;
         }
 
-        tableRow.join('');
+        let tableRows = tableRow.join('');
         
         let tableViewEnd = `</tbody>
             </table>
+        </div>
+        <div class="compress-block container justify-content-center align-content-center">
+            <label for="archiveName" class="h5 form-label">Archive name: </label>
+            <input type="text" class="form-control" id="archiveName">
+            <input type="button" value="Compress & Download" class="btn btn-success">
         </div>`;
 
-        return tableViewStart + tableRow + tableViewEnd;
+        let tableView = tableViewStart.concat(tableRows, tableViewEnd);
+
+        return tableView;
     }
 }
 
@@ -112,6 +121,31 @@ let templateFunction = function() {
     return template;
 };
 
+// Change the width of table-content block with each row;
+function adaptTableView() {
+    let tableContentId = document.getElementById('table-contentId');
+
+    if (tableContentId) {
+        tableContentId.style.height = `${100 + (files.length * 70)}px`;
+    }
+}
+
+function handleInputFiles() {
+    // Accessing files using user input.
+    const uploadInput = document.getElementById('uploadFilesInput');
+    if (uploadInput) {
+        uploadInput.addEventListener(
+        "change",
+        () => {
+            console.log(uploadInput.files.length);
+            files = uploadInput.files;
+
+            render(templateFunction, document.querySelector('#main-content'));    
+        },
+        false
+        );
+    }
+}
+
 console.log(files.length);
 render(templateFunction, document.querySelector('#main-content'));
-

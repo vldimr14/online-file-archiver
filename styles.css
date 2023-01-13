@@ -41,3 +41,10 @@ footer {
 .uploadFileInput {
     width: 220px;
 }
+
+.compress-block {
+    display: flex;
+    margin-bottom: 50px;
+}
+
+
