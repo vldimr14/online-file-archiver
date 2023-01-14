@@ -170,9 +170,5 @@ function compress() {
     return zip;
 }
 
-function download() {
-    
-}
-
 console.log(files.length);
 render(templateFunction, document.querySelector('#main-content'));
