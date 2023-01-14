@@ -70,7 +70,7 @@ function getTableView() {
     if (files.length > 0) {
         let tableViewStart = `<div class="main-content container justify-content-center table-content" id="table-contentId">
             <table class="table table-hover">
-                <caption>Uploaded files</caption>
+                <caption>Uploaded files: ${files.length}</caption>
                 <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -100,8 +100,8 @@ function getTableView() {
         </div>
         <div class="compress-block container justify-content-center align-content-center">
             <label for="archiveName" class="h5 form-label">Archive name: </label>
-            <input type="text" class="form-control" id="archiveName">
-            <input type="button" value="Compress & Download" class="btn btn-success">
+            <input type="text" class="form-control" id="archiveName" placeholder="archive name">
+            <button class="btn btn-success" onclick="compress()">Compress & Download</button>
         </div>`;
 
         let tableView = tableViewStart.concat(tableRows, tableViewEnd);
@@ -145,6 +145,33 @@ function handleInputFiles() {
         false
         );
     }
+}
+
+// functions related to compressing and downloading files
+function compress() {
+    let archiveName = "archive.zip";
+
+    if (document.getElementById('archiveName').value !== '') {
+        archiveName = `${document.getElementById('archiveName').value}.zip`;
+    }
+
+    let zip = new JSZip(); 
+
+    let filesToCompress = files;
+
+    Array.from(filesToCompress).forEach((file, i) => {
+        zip.file(file.name, file);
+    });
+
+    zip.generateAsync({type: 'blob'}).then((content) => {
+        saveAs(content, archiveName);
+    });
+
+    return zip;
+}
+
+function download() {
+    
 }
 
 console.log(files.length);
